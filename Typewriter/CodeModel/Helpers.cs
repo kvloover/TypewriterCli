@@ -83,7 +83,7 @@ namespace Typewriter.CodeModel
             if (metadata.IsGeneric)
                 return metadata.Name + string.Concat("<", string.Join(", ", metadata.TypeArguments.Select(GetTypeScriptName)), ">");
 
-            return ExtractTypeScriptName(metadata);
+            return ExtractTypeScriptName(metadata, metadata.IsArray);
         }
 
         public static string GetOriginalName(ITypeMetadata metadata)
@@ -97,19 +97,19 @@ namespace Typewriter.CodeModel
             return name;
         }
 
-        private static string ExtractTypeScriptName(ITypeMetadata metadata)
+        private static string ExtractTypeScriptName(ITypeMetadata metadata, bool isArray)
         {
             var fullName = metadata.IsNullable ? metadata.FullName.TrimEnd('?') : metadata.FullName;
 
             switch (fullName)
             {
                 case "System.Boolean":
-                    return "boolean";
+                    return isArray ? "boolean[]" : "boolean";
                 case "System.String":
                 case "System.Char":
                 case "Guid":
                 case "System.TimeSpan":
-                    return "string";
+                    return isArray ? "string[]" : "string";
                 case "System.Byte":
                 case "System.SByte":
                 case "System.Int16":
@@ -121,19 +121,19 @@ namespace Typewriter.CodeModel
                 case "System.Single":
                 case "System.Double":
                 case "System.Decimal":
-                    return "number";
+                    return isArray ? "number[]" : "number";
                 case "DateTime":
                 case "System.DateTime":
                 case "System.DateTimeOffset":
-                    return "Date";
+                    return isArray ? "Date[]" : "Date";
                 case "System.Void":
-                    return "void";
+                    return isArray ? "void[]" : "void";
                 case "System.Object":
                 case "dynamic":
-                    return "any";
+                    return isArray ? "any[]" : "any";
             }
 
-            return metadata.IsNullable ? metadata.Name.TrimEnd('?') : metadata.Name;
+            return metadata.IsNullable ? metadata.Name.TrimEnd('?') : metadata.Name; // name already formats according to array
         }
 
         public static bool IsPrimitive(ITypeMetadata metadata)

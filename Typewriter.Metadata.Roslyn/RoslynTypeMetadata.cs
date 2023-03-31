@@ -27,6 +27,7 @@ namespace Typewriter.Metadata.Roslyn
         public bool IsGeneric => (_symbol as INamedTypeSymbol)?.TypeParameters.Any() ?? false;
         public bool IsDefined => _symbol.Locations.Any(l => l.IsInSource);
         public bool IsValueTuple => _symbol.Name == "" && _symbol.BaseType?.Name == "ValueType" && _symbol.BaseType.ContainingNamespace.Name == "System";
+        public bool IsArray => _isArray;
 
         public string Namespace => _symbol.GetNamespace();
         public ITypeMetadata Type => this;
@@ -172,6 +173,7 @@ namespace Typewriter.Metadata.Roslyn
         public bool IsTask => true;
         public bool IsDefined => false;
         public bool IsValueTuple => false;
+        public bool IsArray => false;
         public string Namespace => "System";
         public ITypeMetadata Type => null;
 
