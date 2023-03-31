@@ -22,16 +22,16 @@ namespace Typewriter.Metadata.Roslyn
         {
             _requestRender = requestRender;
             _codePath = document.FilePath;
-            LoadDocument(document);
             Settings = settings;
+            LoadDocument(document);
         }
         public RoslynFileMetadata(string codePath, Settings settings, Action<string[]> requestRender)
         {
             _codePath = codePath;
             _requestRender = requestRender;
             
-            LoadFromFile();
             Settings = settings;
+            LoadFromFile();
         }
         
 
@@ -59,16 +59,20 @@ namespace Typewriter.Metadata.Roslyn
             var code = System.IO.File.ReadAllText(_codePath);
             
             var tree = CSharpSyntaxTree.ParseText(code);
-            _root = tree.GetRoot();
-            
+
             List<string> usings = new List<string>()
             {
                 "System"
             };
 
+            var metaReferences = Settings.IncludedProjects.Select(p => MetadataReference.CreateFromFile(p)).ToList();
+            // metaReferences.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
+
             CSharpCompilationOptions options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, usings: usings);
-            CSharpCompilation compilation = CSharpCompilation.Create("output",new []{tree} , new List<MetadataReference>(), options);
+            CSharpCompilation compilation = CSharpCompilation.Create("output",new []{tree} , metaReferences, options);
+            // var diagnostics = compilation.GetDiagnostics();
             _semanticModel = compilation.GetSemanticModel(tree);
+            _root = _semanticModel.SyntaxTree.GetRoot();
         }
 
         private IEnumerable<INamedTypeSymbol> GetNamespaceChildNodes<T>() where T : SyntaxNode

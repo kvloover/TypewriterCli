@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using  Typewriter.Configuration;
 
 //using EnvDTE;
@@ -22,6 +23,20 @@ namespace Typewriter.CodeModel.Configuration
                 _includedProjects = new List<string>();
 
             //ProjectHelpers.AddProject(_projectItem, _includedProjects, projectName);
+            return this;
+        }
+        
+        public Settings IncludePath(string referencePath)
+        {
+            if (_includedProjects == null)
+                _includedProjects = new List<string>();
+
+            //ProjectHelpers.AddProject(_projectItem, _includedProjects, projectName);
+            var files = System.IO.Directory.GetFiles(referencePath);
+            foreach (var file in files.Where(i => i.EndsWith(".dll")))
+            {
+                _includedProjects.Add(file);   
+            }
             return this;
         }
         
@@ -52,7 +67,7 @@ namespace Typewriter.CodeModel.Configuration
             return this;
         }
 
-        public ICollection<string> IncludedProjects
+        public override ICollection<string> IncludedProjects
         {
             get
             {

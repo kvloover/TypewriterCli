@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -34,7 +35,8 @@ namespace Typewriter.Lexing.Roslyn
             //typeof (XmlReader).Assembly, // System.Xml
             //typeof (XDocument).Assembly, // System.Xml.Linq
             typeof (RuntimeBinderException).Assembly, // Microsoft.CSharp
-            typeof (Class).Assembly // Typewriter.CodeModel
+            typeof (Class).Assembly, // Typewriter.CodeModel
+            typeof (AttributeCollection).Assembly
         };
 
         private List<MetadataReference> _defaultMetadataReferences;

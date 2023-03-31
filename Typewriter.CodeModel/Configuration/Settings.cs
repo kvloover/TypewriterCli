@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Typewriter.CodeModel;
 
 // ReSharper disable once CheckNamespace
@@ -29,6 +30,8 @@ namespace Typewriter.Configuration
         /// Note: Including all projects can have a large impact on performance in large solutions.
         /// </summary>
         public abstract Settings IncludeAllProjects();
+        
+        public abstract ICollection<string> IncludedProjects { get; }
 
         /// <summary>
         /// Gets or sets the file extension for output files.
