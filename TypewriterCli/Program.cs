@@ -23,19 +23,18 @@ namespace TypewriterCli
             string templatePath = null;
             string sourcePath = null;
             string referencePath = null;
-            string framework = null;
+            string regex = null;
+            bool recursive = false;
             bool generateIndex = false;
 
             var p = new OptionSet
             {
                 { "t|template=", "full path to template (*.tst) file.", v => templatePath = v },
-                {
-                    "i|index=", "should generrate index.",
-                    v => generateIndex = !string.IsNullOrEmpty(v) && bool.Parse(v)
-                },
-                { "s|source=", "full path to source (*.cs) file.", v => sourcePath = v },
+                { "s|source=", "full path to source (*.cs) file. or comma seperated directories", v => sourcePath = v },
                 { "r|reference=", "full path to assembly to reference", v => referencePath = v },
-                { "f|framework=", "full path to framework assemblies", v => framework = v },
+                { "x|regex=", "regex", v => regex = v },
+                { "e|recursive", "recursive", v => recursive = true },
+                { "i|index", "should generate index.", v => generateIndex = true },
                 { "h|help", "show this message and exit", v => showHelp = v != null }
             };
 
@@ -59,7 +58,7 @@ namespace TypewriterCli
                     return;
                 }
 
-                var cliArgs = new CliArgs(templatePath, sourcePath, referencePath, framework, generateIndex);
+                var cliArgs = new CliArgs(templatePath, sourcePath, referencePath, regex, recursive, generateIndex);
 
                 if (cliArgs.TemplatePath == null)
                     throw new InvalidOperationException("Missing required option -t|template");
@@ -82,14 +81,11 @@ namespace TypewriterCli
             var template = new Template(cliArgs.TemplatePath);
             var provider = new RoslynMetadataProvider();
             var indexBuilder = new StringBuilder();
-//detect whether its a directory or file
+            if (!string.IsNullOrEmpty(cliArgs.ReferencePath))
+                foreach (var path in cliArgs.ReferencePath.Split(","))
+                    settings.IncludePath(path);
 
-            if (!string.IsNullOrEmpty(cliArgs.ReferencePath)) 
-                settings.IncludePath(cliArgs.ReferencePath);
-
-            if (!string.IsNullOrEmpty(cliArgs.FrameworkPath))
-                settings.IncludePath(cliArgs.FrameworkPath);
-
+            // detects whether its a directory or file
             foreach (var path in GetFiles(cliArgs.SourcePath, cliArgs.Recursive, cliArgs.Regex))
             {
                 var file = new FileImpl(provider.GetFile(path, settings, null));
