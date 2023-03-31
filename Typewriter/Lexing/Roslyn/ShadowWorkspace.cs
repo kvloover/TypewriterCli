@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Classification;
 using Microsoft.CodeAnalysis.CSharp;
@@ -28,6 +29,8 @@ namespace Typewriter.Lexing.Roslyn
             typeof (int).Assembly, // mscorelib
             typeof (Uri).Assembly, // System
             typeof (Enumerable).Assembly, // System.Core
+            typeof (Regex).Assembly, // System.Text.RegularExpressions
+            typeof (Environment).Assembly, // System.Diagnostics
             //typeof (XmlReader).Assembly, // System.Xml
             //typeof (XDocument).Assembly, // System.Xml.Linq
             typeof (RuntimeBinderException).Assembly, // Microsoft.CSharp
